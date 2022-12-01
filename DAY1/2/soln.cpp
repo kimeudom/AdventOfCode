@@ -123,14 +123,12 @@ void quicksort(int array[], int start, int end) {
 int main(int argc, char **argv) {
 
   // Check input args
-  /*if (argc < 2) {
+  if (argc < 2) {
     cerr << "Usage: ./soln <<input file path>>" << endl;
     return -1;
   }
-  */
 
-  // string filepath = argv[1];
-  string filepath = "puzzle_input.csv";
+  string filepath = argv[1];
   addGrptotal(filepath);
 
   int linkedListSize = getSize();
