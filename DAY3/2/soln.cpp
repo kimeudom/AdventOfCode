@@ -31,49 +31,45 @@ void printArray(int *arr, int size) {
 
 // Returns the index of the shared item index (in string one) if found in all
 // three strings
-int findSharedItemIndex(string one, string two, string three) {
+char findSharedItem(string one, string two, string three) {
 
+  // Converting the string arrays to integer arrays
+  // Necesary to implement the search tools in the tools.h header file
   int *arrOne = stringToIntArray(one);
   int *arrTwo = stringToIntArray(two);
   int *arrThree = stringToIntArray(three);
 
+  // Sort the data to use faster searching algorithims
   mergeSort(arrOne, 0, one.length() - 1);
   mergeSort(arrTwo, 0, two.length() - 1);
   mergeSort(arrThree, 0, three.length() - 1);
+
+  // Stores search indexes for line 2 and line 3
   int index2;
   int index3;
+
+  // Iterate through line 1 while checking in lines 2 and 3 for a similar key
   for (int i = 0; i < one.length(); i++) {
 
-    index2 = binarySearch(arrTwo, 0, two.length(), arrOne[i]);
+    index2 = binarySearch(arrTwo, 0, two.length() - 1, arrOne[i]);
 
     if (index2 != -1) {
-      index2 = binarySearch(arrThree, 0, three.length(), arrOne[i]);
+      index3 = binarySearch(arrThree, 0, three.length() - 1, arrOne[i]);
       if (index3 != -1) {
-        cout << arrOne[i] << "  " << arrTwo[index2] << "  " << arrThree[index3];
-      }
-    }
-  }
-
-  /*
-  // Finding the common element
-  for (int i = 0; i < one.length(); i++) {
-    if (binarySearch(arrTwo, 0, two.length(), arrOne[i]) != -1) {
-      if (binarySearch(arrThree, 0, three.length(), arrOne[i]) != -1) {
         char c = arrOne[i];
+        // Free up memory
+        free(arrOne);
+        free(arrTwo);
+        free(arrThree);
 
-        cout << "one " << i << " " << c << endl;
-        cout << "two " << i << " " << c << endl;
-        cout << "three " << i << " " << c << endl;
-
-        return i;
+        // return the common element
+        return c;
       }
     }
   }
 
-  */
-
-  // else return -1
-  return -1;
+  // else return 0 // Null value
+  return 0;
 }
 
 int main(int argc, char **argv) {
@@ -91,9 +87,11 @@ int main(int argc, char **argv) {
     return -2;
   }
 
+  // Store three lines per one loop as a group
   string lineOne;
   string lineTwo;
   string lineThree;
+
   int totalPoints = 0;
 
   while (input.peek() != EOF) {
@@ -102,10 +100,10 @@ int main(int argc, char **argv) {
     std::getline(input, lineTwo, '\n');
     std::getline(input, lineThree, '\n');
 
-    char c = lineOne[findSharedItemIndex(lineOne, lineTwo, lineThree)];
+    // Locate the shared item in the group of three, determine int priority
+    // value and add the value to the running total
+    char c = findSharedItem(lineOne, lineTwo, lineThree);
     totalPoints += priorityValue(c);
-
-    cout << c << " " << priorityValue(c) << endl;
   }
 
   std::cout << totalPoints << endl;

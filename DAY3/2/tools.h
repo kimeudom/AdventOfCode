@@ -52,6 +52,8 @@ void merge(int array[], int start, int median, int end) {
   }
 }
 
+// Merge Sort Algorithim for integer arrays
+
 void mergeSort(int array[], int start, int end) {
   if (end > start) {
     // The middle of an array passed to the function
@@ -87,6 +89,7 @@ int binarySearch(int arr[], int low, int high, int key) {
   return -1;
 }
 
+// Convert an integer array to a string
 string intArrToString(int *array, int items) {
   string s;
   for (int i = 0; i < items; i++) {
@@ -95,6 +98,8 @@ string intArrToString(int *array, int items) {
   return s;
 }
 
+// Convert a string to an integer array of individual elements being
+// the characters of the string
 int *stringToIntArray(string s) {
 
   int stringSize = s.length();
@@ -114,7 +119,7 @@ void swapValues(int *a, int *b) {
   *a = temp;
 }
 
-// Sorting the array
+// QuickSort algorithim for integer arrays
 void quicksort(int array[], int start, int end) {
   if (end > start) {
     // taking the median index as the pivot
