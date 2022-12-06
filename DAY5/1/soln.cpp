@@ -97,6 +97,12 @@ int main(int argc, char **argv) {
   // string filename = argv[1];
   input.open(filename);
 
+  // File error checking
+  if (input.fail()) {
+    cerr << "Could not open file" << endl;
+    return -2;
+  }
+
   // A line from the puzzle input file
   string line;
   char input_stacks[8][9];
