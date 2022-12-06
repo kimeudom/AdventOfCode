@@ -3,7 +3,6 @@
 #include <set>
 
 using namespace std;
-
 int checkConcurrency(string line) {
 
   for (int i = 0; i < line.length() - 3; i++) {
@@ -20,6 +19,23 @@ int checkConcurrency(string line) {
 
     if (s.size() == 4) {
       return i + 1 + 3;
+    }
+    s.clear();
+  }
+
+  return -1;
+}
+
+int checkMessage(string line) {
+
+  for (int i = 0; i < line.length() - 13; i++) {
+    set<char> s;
+    for (int j = 0; j < 14; j++) {
+      s.insert(line[i + j]);
+    }
+
+    if (s.size() == 14) {
+      return i + 1 + 13;
     }
     s.clear();
   }
@@ -47,8 +63,9 @@ int main(int argc, char **argv) {
   // Store the line
 
   string line;
+
   getline(input, line);
-  int startOfPacket = checkConcurrency(line);
-  cout << startOfPacket << endl;
+  int startOfMessage = checkMessage(line);
+  cout << startOfMessage << endl;
   input.close();
 }
