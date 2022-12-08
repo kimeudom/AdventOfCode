@@ -2,6 +2,9 @@
 #include <fstream>
 #include <iostream>
 
+// Global Total
+int TotalGlobal = 0;
+
 using namespace std;
 
 // Tree nodes
@@ -68,9 +71,6 @@ TreeNode *TreeNode::getLastChild() {
 int getSize(TreeNode *self) {
   if (self->firstChild == NULL) {
     // Return the file size since it has no children
-    if (self->size > 100000) {
-      return self->size;
-    }
     return self->size;
   }
 
@@ -78,59 +78,15 @@ int getSize(TreeNode *self) {
   // Level order traversal
   int sum = 0;
   TreeNode *temp = self->getFirstChild();
+  // If we stumble upon a directory, get its size
   while (temp != NULL) {
-    sum += getSize(temp);
+    if (getSize(temp) <= 100000) {
+      sum += getSize(temp);
+    }
     temp = temp->getNextSibling();
   }
   delete (temp);
-
   return sum;
-}
-
-void testing() {
-  TreeNode *root = new TreeNode("/");
-  // 4 kids , 2 dir , 2 files for /
-  TreeNode *a = new TreeNode("a", root);
-  TreeNode *b = new TreeNode("b", root, 10);
-  TreeNode *c = new TreeNode("c", root);
-  TreeNode *d = new TreeNode("d", root, 50);
-  // a has 3 files
-  TreeNode *e = new TreeNode("e", a, 37);
-  TreeNode *f = new TreeNode("f", a, 44);
-  TreeNode *g = new TreeNode("g", a, 68);
-  a->addFirstChild(e);
-  e->addSibling(f);
-  f->addSibling(g);
-  // c has 4 files and 1 dir
-  TreeNode *h = new TreeNode("h", c, 512);
-  TreeNode *i = new TreeNode("i", c, 648);
-  TreeNode *j = new TreeNode("j", c, 488);
-  TreeNode *k = new TreeNode("k", c, 9);
-  TreeNode *l = new TreeNode("l", c);
-  c->addFirstChild(h);
-  h->addSibling(i);
-  i->addSibling(j);
-  j->addSibling(k);
-  k->addSibling(l);
-
-  // Add a level 3 on l
-  TreeNode *m = new TreeNode("m", l, 889);
-  TreeNode *n = new TreeNode("n", l, 89);
-  TreeNode *o = new TreeNode("o", l, 356);
-  TreeNode *p = new TreeNode("p", l, 157);
-  TreeNode *q = new TreeNode("q", l, 3);
-  l->addFirstChild(m);
-  m->addSibling(n);
-  n->addSibling(o);
-  o->addSibling(p);
-  p->addSibling(q);
-
-  cout << "a : " << getSize(a) << endl;
-  cout << "b : " << getSize(b) << endl;
-  cout << "c : " << getSize(c) << endl;
-  cout << "d : " << getSize(d) << endl;
-
-  cout << "l : " << getSize(l) << endl;
 }
 
 void addChild(TreeNode *prt, TreeNode *chld) {
@@ -175,28 +131,34 @@ void execCommand_cd(string line, TreeNode *dir, TreeNode **temp) {
   }
 }
 
-void execCommand_ls(string line, string isDir, TreeNode *dir) {
-  if (isDir == "dir") {
-    string dirName = line.substr(4, line.length() - 1);
-    TreeNode *tempDir = new TreeNode(dirName);
-    addChild(dir, tempDir);
-  } else {
-    // is a file
-    // File format
-    // [filesize[int]] newFileName
-    int fileSize = stoi(line);
-    string newFileName = line.substr(line.find(' ') + 1, line.length() - 1);
-    TreeNode *file = new TreeNode(newFileName, dir, fileSize);
-    addChild(dir, file);
+int getDirTotals(TreeNode *root) {
+  int Total = 0;
+  if (root->getFirstChild() == NULL) {
+    return 0;
   }
+
+  TreeNode *temp = root->getFirstChild();
+  if (getSize(temp) <= 100000 && temp->getFirstChild() != NULL) {
+    Total += getSize(temp);
+    cout << getSize(temp) << endl;
+  }
+  while (temp != NULL) {
+    Total += getDirTotals(temp);
+    temp = temp->getNextSibling();
+  }
+
+  return Total;
 }
+
 int main(int argc, char **argv) {
+  /*
   if (argc < 2) {
     cerr << "Usage :: ./soln <<puzzle input>>" << endl;
     return -1;
   }
+  */
 
-  string filename = argv[1];
+  string filename = "puzzle_input.csv";
   ifstream input;
   input.open(filename);
 
@@ -266,6 +228,5 @@ int main(int argc, char **argv) {
     }
   }
 
-  cout << getSize(root) << endl;
-  return 0;
+  cout << getDirTotals(root) << endl;
 }
