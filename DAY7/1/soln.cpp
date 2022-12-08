@@ -80,12 +80,9 @@ int getSize(TreeNode *self) {
   TreeNode *temp = self->getFirstChild();
   // If we stumble upon a directory, get its size
   while (temp != NULL) {
-    if (getSize(temp) <= 100000) {
-      sum += getSize(temp);
-    }
+    sum += getSize(temp);
     temp = temp->getNextSibling();
   }
-  delete (temp);
   return sum;
 }
 
@@ -133,15 +130,19 @@ void execCommand_cd(string line, TreeNode *dir, TreeNode **temp) {
 
 int getDirTotals(TreeNode *root) {
   int Total = 0;
+  // If the current Tree Node has no children it is a file
   if (root->getFirstChild() == NULL) {
     return 0;
   }
 
-  TreeNode *temp = root->getFirstChild();
-  if (getSize(temp) <= 100000 && temp->getFirstChild() != NULL) {
-    Total += getSize(temp);
-    cout << getSize(temp) << endl;
+  // Else it is a directory
+  // Try and see if the dir is less than 10000;
+  if (getSize(root) <= 100000) {
+    Total += getSize(root);
   }
+
+  // Else move to the children, try and get their sizes
+  TreeNode *temp = root->getFirstChild();
   while (temp != NULL) {
     Total += getDirTotals(temp);
     temp = temp->getNextSibling();
@@ -151,14 +152,12 @@ int getDirTotals(TreeNode *root) {
 }
 
 int main(int argc, char **argv) {
-  /*
   if (argc < 2) {
     cerr << "Usage :: ./soln <<puzzle input>>" << endl;
     return -1;
   }
-  */
 
-  string filename = "puzzle_input.csv";
+  string filename = argv[1];
   ifstream input;
   input.open(filename);
 
