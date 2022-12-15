@@ -31,8 +31,8 @@ bool endOfScreen(int cc) {
 
 bool inSpriteRange(int cc, int x) {
   // normalize the data
-  int ranges[] = {40, 80, 120, 160, 200};
-  for (int i = 4; i >= 0; i--) {
+  int ranges[] = {40, 80, 120, 160, 200, 240};
+  for (int i = 5; i >= 0; i--) {
     if (cc - ranges[i] >= 0) {
       cc -= ranges[i];
       break;
@@ -72,7 +72,7 @@ void printScreen(string filePath) {
     int x = processor->getX();
 
     // Check if sprite is visible
-    (inSpriteRange(cc, x)) ? putc('#', stdout) : putc('.', stdout);
+    (inSpriteRange(cc, x + 1)) ? putc('#', stdout) : putc('.', stdout);
 
     if (endOfScreen(cc)) {
       cout << endl;
@@ -86,14 +86,12 @@ void printScreen(string filePath) {
     processor->setCycleCount(cc + 1);
     cc = processor->getCycleCount();
 
-    // If end of screen, print
+    // Check if sprite is visible
+    (inSpriteRange(cc, x + 1)) ? putc('#', stdout) : putc('.', stdout);
+
     if (endOfScreen(cc)) {
       cout << endl;
     }
-
-    // Check if sprite is visible
-    (inSpriteRange(cc, x)) ? putc('#', stdout) : putc('.', stdout);
-
     // The value of the addx operation
     int newX = stoi(line.substr(line.find(" "), line.length()));
     // add the x value to the procesors x register
@@ -104,13 +102,12 @@ void printScreen(string filePath) {
   delete (processor);
   input.close();
 }
+
 int main(int argc, char **argv) {
-  /*
   if (argc < 2) {
     cerr << "Usage : ./soln <puzzle_input_path>" << endl;
   }
-  */
-  string filePath = "../test.csv";
+  string filePath = argv[1];
   ifstream input;
 
   printScreen(filePath);
