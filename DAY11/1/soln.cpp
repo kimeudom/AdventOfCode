@@ -1,185 +1,89 @@
-#include <cmath>
-#include <fstream>
+#include "tools.h"
 #include <iostream>
 
 using namespace std;
 
-class List {
-private:
-  int data;
-  List *next;
+// Hardcoded from the test input
+int monkeyBusinessPuzzle() {
+  // Create the monkeys
+  Monkey *m0 = new Monkey(3, 7, 3, 0);
+  m0->addToList(56);
+  m0->addToList(56);
+  m0->addToList(92);
+  m0->addToList(65);
+  m0->addToList(71);
+  m0->addToList(61);
+  m0->addToList(79);
+  Monkey *m1 = new Monkey(6, 4, 11, 1);
+  m1->addToList(61);
+  m1->addToList(85);
+  Monkey *m2 = new Monkey(0, 7, 7, 2);
+  m2->addToList(54);
+  m2->addToList(96);
+  m2->addToList(82);
+  m2->addToList(78);
+  m2->addToList(69);
+  Monkey *m3 = new Monkey(5, 1, 2, 3);
+  m3->addToList(57);
+  m3->addToList(59);
+  m3->addToList(65);
+  m3->addToList(95);
+  Monkey *m4 = new Monkey(2, 6, 19, 4);
+  m4->addToList(62);
+  m4->addToList(67);
+  m4->addToList(80);
+  Monkey *m5 = new Monkey(1, 4, 5, 5);
+  m5->addToList(91);
+  Monkey *m6 = new Monkey(2, 0, 17, 6);
+  m6->addToList(79);
+  m6->addToList(83);
+  m6->addToList(64);
+  m6->addToList(52);
+  m6->addToList(77);
+  m6->addToList(56);
+  m6->addToList(63);
+  m6->addToList(92);
+  Monkey *m7 = new Monkey(3, 5, 13, 7);
+  m7->addToList(50);
+  m7->addToList(97);
+  m7->addToList(76);
+  m7->addToList(96);
+  m7->addToList(80);
+  m7->addToList(56);
 
-public:
-  List() { data = 0, next = NULL; };
-  // Returns the last element pointer value in the list
-  List *getLast();
-  // Get's the pointer to the first element and dequeue
-  List *getFirst();
-  // Enqueue the pointer to the end
-  // Overloaded for transferring list nodes or making new ones
-  void addToEnd(int value);
-  void addToEnd(List *ptr);
-  // Setters
-  void setValue(int value) { data = value; }
-  // getters
-  int getValue() { return data; }
-  List *getNext() { return next; }
-};
+  Monkey *arr[] = {m0, m1, m2, m3, m4, m5, m6, m7};
 
-// Linked List member functions
-List *List::getFirst() {
-  if (next == NULL) {
-    return NULL;
+  for (int i = 0; i < 20; i++) {
+    int throwTo;
+    // Monkey takes turn, throws first node to next monkey
+    m0->takeTurn(m0, arr);
+    m1->takeTurn(m1, arr);
+    m2->takeTurn(m2, arr);
+    m3->takeTurn(m3, arr);
+    m4->takeTurn(m4, arr);
+    m5->takeTurn(m5, arr);
+    m6->takeTurn(m6, arr);
+    m7->takeTurn(m7, arr);
   }
+  // number of monkey inspections
+  int m0i = m0->noOfInspections;
+  int m1i = m1->noOfInspections;
+  int m2i = m2->noOfInspections;
+  int m3i = m3->noOfInspections;
+  int m4i = m4->noOfInspections;
+  int m5i = m5->noOfInspections;
+  int m6i = m6->noOfInspections;
+  int m7i = m7->noOfInspections;
 
-  List *temp = next;
-  next = next->next;
-  return temp;
+  // Get the number of incrimented inspections from the monkeys
+  int arrInspections[] = {m0i, m1i, m2i, m3i, m4i, m5i, m6i, m7i};
+
+  // Sort the array
+  bubbleSort(arrInspections, 8);
+
+  return arrInspections[0] * arrInspections[1];
 }
-
-void List::addToEnd(List *ptr) {
-  if (next == NULL) {
-    next = ptr;
-    return;
-  }
-  List *last = getLast();
-  last->next = ptr;
-}
-
-void List::addToEnd(int value) {
-  List *temp = new List();
-  temp->data = value;
-
-  if (next == NULL) {
-    next = temp;
-    return;
-  }
-
-  List *last = getLast();
-  last->next = temp;
-}
-
-List *List::getLast() {
-  if (next == NULL) {
-    return NULL;
-  }
-
-  List *temp;
-  temp = next;
-  while (temp->next != NULL) {
-    temp = temp->next;
-  }
-  return temp;
-}
-
-class Monkey {
-private:
-  List *root;
-  int divisor;
-  // In order to determine its operation
-  int throwTo[2];
-  // Index in the list
-  int no;
-
-public:
-  Monkey(int trueThrow, int falseThrow, int div, int index) {
-    root = NULL;
-    divisor = div;
-    throwTo[0] = trueThrow;
-    throwTo[1] = falseThrow;
-    no = index;
-  }
-  // Plays it's turn and returns the index of the monkey to throw to
-  int takeTurn(Monkey *self);
-  // Carry out it's operation
-  void operation(int no, List *node);
-  // Getters
-  int getNumber() { return no; }
-  int getDivider() { return divisor; }
-  int getThrowTrue() { return throwTo[0]; }
-  int getThrowFalse() { return throwTo[1]; }
-};
-
-void Monkey::operation(int no, List *node) {
-  switch (no) {
-  case 0:
-    node->setValue(node->getValue() * 19);
-    break;
-  case 1:
-    node->setValue(node->getValue() + 6);
-    break;
-  case 2:
-    node->setValue(node->getValue() * node->getValue());
-    break;
-  case 3:
-    node->setValue(node->getValue() + 3);
-    break;
-  case 4:
-    node->setValue(node->getValue() * 17);
-    break;
-  case 5:
-    node->setValue(node->getValue() + 7);
-    break;
-  case 6:
-    node->setValue(node->getValue() + 6);
-    break;
-  case 7:
-    node->setValue(node->getValue() + 3);
-    break;
-  };
-}
-
-// Monkey Member Functions
-// Returns -1 if list is empty, hence skip it in a round
-int Monkey::takeTurn(Monkey *self) {
-  List *temp;
-  temp = self->root->getFirst();
-
-  if (temp == NULL) {
-    return -1;
-  }
-
-  int no = self->getNumber();
-
-  // Perform operation
-  operation(no, temp);
-  // Perform division test
-  if (temp->getValue() / self->getDivider() == 0) {
-    return getThrowTrue();
-  }
-  return getThrowFalse();
-}
-
-Monkey *getMonkeys(string filePath) {
-  ifstream input;
-  input.open(filePath);
-  int monkeyCount;
-  string line;
-
-  // Get  monkey count
-  for (int i = 0; input.peek() != EOF; i++) {
-    if (line == "") {
-      monkeyCount = i;
-    }
-  }
-  input.close();
-  monkeyCount++;
-
-  Monkey *arr = (Monkey *)malloc(sizeof(Monkey) * monkeyCount);
-  for (int i = 0; input.peek() != EOF; i++) {
-    while (line != "") {
-      getline(input, line);
-    }
-  }
-
-  input.open(filePath);
-  input.close();
-}
-
 int main(int argc, char **argv) {
-
-  string filePath = argv[1];
-  ifstream input;
-
+  cout << monkeyBusinessPuzzle() << endl;
   return 0;
 }
