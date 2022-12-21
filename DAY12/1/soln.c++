@@ -1,3 +1,5 @@
+#include "tools.h"
+#include <bits/stdc++.h>
 #include <cstring>
 #include <fstream>
 #include <iostream>
@@ -105,7 +107,7 @@ int main(int argc, char **argv) {
   }
 
   // Get the maze
-  string filePath = "../test.txt";
+  string filePath = argv[1];
 
   get3DmazeDim(filePath);
   // Adding 2 additional rows and columns because we need to create maze
